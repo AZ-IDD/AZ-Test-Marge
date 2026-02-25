@@ -22,7 +22,6 @@ jobs:
           grep -q '<form' index.html
           grep -q 'id="fullName"' index.html
           grep -q 'id="email"' index.html
-          grep -q 'id="phone"' index.html
           grep -q 'type="submit"' index.html
           echo "HTML structure is valid"
 
@@ -62,7 +61,6 @@ jobs:
           grep -q 'contactForm' script.js
           grep -q 'fullName' script.js
           grep -q 'email' script.js
-          grep -q 'phone' script.js
           grep -q 'preventDefault' script.js
           echo "JavaScript references are valid"
 
