@@ -1,0 +1,87 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  html-validation:
+    name: Validate HTML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check index.html exists
+        run: test -f index.html
+
+      - name: Validate HTML structure
+        run: |
+          grep -q '<!DOCTYPE html>' index.html
+          grep -q '<form' index.html
+          grep -q 'id="fullName"' index.html
+          grep -q 'id="email"' index.html
+          grep -q 'type="submit"' index.html
+          echo "HTML structure is valid"
+
+  css-validation:
+    name: Validate CSS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check style.css exists
+        run: test -f style.css
+
+      - name: Check CSS is not empty
+        run: test -s style.css
+
+      - name: Validate CSS links to form elements
+        run: |
+          grep -q 'input' style.css
+          grep -q 'button' style.css
+          grep -q '.results' style.css
+          echo "CSS references are valid"
+
+  js-validation:
+    name: Validate JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check script.js exists
+        run: test -f script.js
+
+      - name: Check JS is not empty
+        run: test -s script.js
+
+      - name: Validate JS references form elements
+        run: |
+          grep -q 'contactForm' script.js
+          grep -q 'fullName' script.js
+          grep -q 'email' script.js
+          grep -q 'preventDefault' script.js
+          echo "JavaScript references are valid"
+
+  file-integrity:
+    name: File Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify all required files exist
+        run: |
+          for file in index.html style.css script.js; do
+            if [ ! -f "$file" ]; then
+              echo "FAIL: $file is missing"
+              exit 1
+            fi
+            echo "OK: $file exists"
+          done
+
+      - name: Verify HTML references CSS and JS
+        run: |
+          grep -q 'style.css' index.html
+          grep -q 'script.js' index.html
+          echo "HTML correctly references style.css and script.js"
